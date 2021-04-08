@@ -2,9 +2,7 @@ package com.example.demo.model.persistence;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,7 +10,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -85,13 +82,11 @@ public class Cart {
 	}
 	
 	public void removeItem(Item item) {
-		if(items == null) {
-			items = new ArrayList<>();
+		if (items == null)	return;
+		long countItems = items.stream().filter(itemParam -> itemParam.getId().equals(item.getId())).count();
+		if (countItems > 0) {
+			items.remove(item);
+			this.total = this.total.subtract(item.getPrice());
 		}
-		items.remove(item);
-		if(total == null) {
-			total = new BigDecimal(0);
-		}
-		total = total.subtract(item.getPrice());
 	}
 }

@@ -1,9 +1,7 @@
 package com.example.demo.controllers;
 
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -40,6 +38,7 @@ public class UserController {
 	@GetMapping("/{username}")
 	public ResponseEntity<User> findByUserName(@PathVariable String username) {
 		User user = userRepository.findByUsername(username);
+		System.out.println("IS user null? " + username + "  isNUll??" + (user == null));
 		return user == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(user);
 	}
 	
@@ -67,7 +66,7 @@ public class UserController {
 	private void validatePassword(CreateUserRequest user) throws Exception {
 		boolean isLengthValid = user.getPassword().length() > 7;
 		boolean isPasswordCorrect = user.getPassword().equals(user.getConfirmPassword());
-		if (!(isLengthValid || isPasswordCorrect)) {
+		if (!(isLengthValid && isPasswordCorrect)) {
 			throw new Exception("invalid user - " + user.getUsername());
 		}
 	}

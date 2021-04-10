@@ -1,6 +1,9 @@
 package com.example.demo.controllers;
 
 
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -20,7 +23,9 @@ import com.example.demo.model.requests.CreateUserRequest;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-	
+
+	private static final Logger log = LoggerFactory.getLogger(UserController.class);
+
 	@Autowired
 	private UserRepository userRepository;
 	
@@ -32,18 +37,21 @@ public class UserController {
 
 	@GetMapping("/id/{id}")
 	public ResponseEntity<User> findById(@PathVariable Long id) {
+		log.info("UserController - findById", id);
 		return ResponseEntity.of(userRepository.findById(id));
 	}
 	
 	@GetMapping("/{username}")
 	public ResponseEntity<User> findByUserName(@PathVariable String username) {
+		log.info("UserController - findByUserName", username);
 		User user = userRepository.findByUsername(username);
-		System.out.println("IS user null? " + username + "  isNUll??" + (user == null));
+		log.info("UserController - findByUserName", "user id - " + user.getId());
 		return user == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(user);
 	}
 	
 	@PostMapping("/create")
 	public ResponseEntity<User> createUser(@RequestBody CreateUserRequest createUserRequest) {
+		log.info("UserController - createUser", createUserRequest);
 		User user = new User();
 		user.setUsername(createUserRequest.getUsername());
 		Cart cart = new Cart();
@@ -53,7 +61,7 @@ public class UserController {
 		try {
 			validatePassword(createUserRequest);
 		} catch (Exception e) {
-			System.out.println(e.getMessage());
+			log.warn("UserController - createUser - problem", e);
 			return ResponseEntity.badRequest().build();
 		}
 		user.setSalt();
@@ -66,6 +74,7 @@ public class UserController {
 	private void validatePassword(CreateUserRequest user) throws Exception {
 		boolean isLengthValid = user.getPassword().length() > 7;
 		boolean isPasswordCorrect = user.getPassword().equals(user.getConfirmPassword());
+		log.info("UserController - validatePassword", "isPasswordCorrect? " + isPasswordCorrect, "isLengthValid?" + isLengthValid);
 		if (!(isLengthValid && isPasswordCorrect)) {
 			throw new Exception("invalid user - " + user.getUsername());
 		}

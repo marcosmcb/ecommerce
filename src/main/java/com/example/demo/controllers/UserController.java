@@ -45,7 +45,7 @@ public class UserController {
 	public ResponseEntity<User> findByUserName(@PathVariable String username) {
 		log.info("UserController - findByUserName", username);
 		User user = userRepository.findByUsername(username);
-		log.info("UserController - findByUserName", "user id - " + user.getId());
+		log.info("UserController - findByUserName", "is user null? " + user == null);
 		return user == null ? ResponseEntity.notFound().build() : ResponseEntity.ok(user);
 	}
 	
@@ -61,7 +61,7 @@ public class UserController {
 		try {
 			validatePassword(createUserRequest);
 		} catch (Exception e) {
-			log.warn("UserController - createUser - problem", e);
+			log.warn("UserController - problem", e);
 			return ResponseEntity.badRequest().build();
 		}
 		user.setSalt();

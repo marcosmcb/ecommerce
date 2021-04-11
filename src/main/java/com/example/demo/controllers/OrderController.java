@@ -35,6 +35,7 @@ public class OrderController {
 		log.info("OrderController - submit", username);
 		User user = userRepository.findByUsername(username);
 		if(user == null) {
+			log.warn("OrderController - problem", username);
 			return ResponseEntity.notFound().build();
 		}
 		log.info("OrderController - submit", "user id - " + user.getId());
